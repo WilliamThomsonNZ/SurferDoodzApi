@@ -35,29 +35,23 @@ function onWhitelist(_address) {
 const app = express();
 
 //Middleware
-// app.use(
-//   cors({
-//     origin: ["http://localhost:3000", "http://localhost:3000/*"],
-//   })
-// );
-
-//endpoints
-app.get(
-  "/api/merkleproof",
+app.use(
   cors({
     origin: ["http://localhost:3000", "http://localhost:3000/*"],
-  }),
-  (req, res) => {
-    try {
-      const addr = req.query.address;
-      const proof = generateProof(addr);
-      res.json({ code: 200, proof: proof });
-    } catch (err) {
-      console.log(err);
-      res.json({ code: 400, message: err });
-    }
-  }
+  })
 );
+
+//endpoints
+app.get("/api/merkleproof", (req, res) => {
+  try {
+    const addr = req.query.address;
+    const proof = generateProof(addr);
+    res.json({ code: 200, proof: proof });
+  } catch (err) {
+    console.log(err);
+    res.json({ code: 400, message: err });
+  }
+});
 
 app.get("/api/merkleroot", (req, res) => {
   try {
@@ -68,25 +62,19 @@ app.get("/api/merkleroot", (req, res) => {
   }
 });
 
-app.get(
-  "/api/whitelist",
-  cors({
-    origin: ["http://localhost:3000", "http://localhost:3000/*"],
-  }),
-  (req, res) => {
-    try {
-      const addr = req.query.address;
-      const isOnWhitelist = onWhitelist(addr);
-      if (isOnWhitelist) {
-        res.json({ code: 200, onWhiteliist: true });
-      } else {
-        res.json({ code: 200, onWhiteliist: false });
-      }
-    } catch (err) {
-      res.json({ code: 400, message: err.message });
+app.get("/api/whitelist", (req, res) => {
+  try {
+    const addr = req.query.address;
+    const isOnWhitelist = onWhitelist(addr);
+    if (isOnWhitelist) {
+      res.json({ code: 200, onWhiteliist: true });
+    } else {
+      res.json({ code: 200, onWhiteliist: false });
     }
+  } catch (err) {
+    res.json({ code: 400, message: err.message });
   }
-);
+});
 
 // Initialize server
 app.listen(2000, () => {
